@@ -3,8 +3,13 @@ from blackjack_classes import Player
 
 
 def welcome():
+    """
+    Main menu. From here, the player can start or quit the game.
+    :return: None
+    """
     choice = input("Welcome to the blackjack table, have a seat! You've got 500 credits on the house. "
                    "Press 's' to start the game, or 'q' to leave the table: ").lower()
+
     while choice not in ['s', 'q']:
         choice = (input("Please, press 's' to start the game, or 'q' to leave: ")).lower()
 

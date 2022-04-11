@@ -67,6 +67,7 @@ def start_game(player: Player, bet: int):
         player.hit_card(draw_card(current_deck))
         time.sleep(1)
 
+    # player's first two cards sum up to 21 = natural (winnings = half the bet)
     if player.get_score() == 21:
         win_amount = int(bet * 0.5)
         print("Natural! You win {} chips!".format(win_amount))
@@ -99,11 +100,12 @@ def start_game(player: Player, bet: int):
             player.modify_balance(win_amount, 'win')
         elif d_score == player_score:
             print("It's a tie! No chips won or lost.")
-        else:
+        else:  # dealer has a hand under 21, higher than the player's hand
             print("You lost {} chips!".format(bet))
             player.modify_balance(bet, 'lose')
-    else:
+    else:  # player has a hand over 21 = loss
         print("You lost {} chips!".format(bet))
         player.modify_balance(bet, 'lose')
 
+    # prompt user for another game or
     return finish_game()

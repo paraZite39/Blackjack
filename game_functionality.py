@@ -57,11 +57,14 @@ def start_game(bet: int):
     print("Your score:", y_score)
     print("Dealer score:", d_score)
 
-    if y_score <= 21 and d_score > 21:
-        print("You win {} chips!".format(int(bet * 1.5)))
-    elif 21 >= y_score > d_score:
-        print("You win {} chips!".format(int(bet * 1.5)))
-    elif y_score == d_score:
-        print("It's a tie! No chips won or lost.")
+    if y_score <= 21:
+        if d_score > 21:
+            print("You won {} chips!".format(bet * 2))
+        elif d_score == y_score:
+            print("It's a tie! No chips won or lost.")
+        elif d_score < y_score:
+            print("You won {} chips!".format(bet * 2))
+        else:
+            print("You lost {} chips!".format(bet))
     else:
         print("You lost {} chips!".format(bet))

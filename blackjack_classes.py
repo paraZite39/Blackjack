@@ -13,6 +13,7 @@ class Card:
 
 class Player:
     def __init__(self):
+        self.balance = 500
         self.score = 0
         self.folded = False
 
@@ -22,13 +23,13 @@ class Player:
         self.score += card_score[1]
 
         if self.score > 21:
-            print("OVER 21!")
+            print("OVER 21! Score: {}".format(self.get_score()))
             self.fold()
         elif self.score == 21:
             print("21!")
             self.fold()
         else:
-            print("Score is {}...".format(self.score))
+            print("Score is {}...".format(self.get_score()))
 
     def fold(self):
         self.folded = True
@@ -39,6 +40,18 @@ class Player:
     def get_score(self):
         return self.score
 
+    def set_score(self, amount):
+        self.score = amount
+
+    def get_balance(self):
+        return self.balance
+
+    def modify_balance(self, amount, result):
+        if result == 'win':
+            self.balance += amount
+        else:
+            self.balance -= amount
+
 
 class Dealer(Player):
     def __init__(self):
@@ -46,4 +59,3 @@ class Dealer(Player):
 
     def keeps_playing(self):
         return self.score < 17
-

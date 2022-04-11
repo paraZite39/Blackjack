@@ -8,10 +8,36 @@ full_deck = [Card(suit, value) for suit in card_suits for value in card_values]
 
 
 def draw_card(deck):
+    """
+    :param deck: a list of Card instances (preferably shuffled);
+    :returns card: the last Card instance in the deck;
+    """
     return deck.pop()
 
 
+def finish_game():
+    """
+    Finishes current game.
+    :return: True if player wants to end the game for good, False if the player wants to restart.
+    """
+    choice = input("Press 'r' to play again or 'q' to quit: ")
+    while choice not in ['r', 'q']:
+        choice = input("Press 'r' to play again or 'q' to quit: ")
+
+    if choice == 'r':
+        return False
+    else:
+        return True
+
+
 def dealer_score(dealer, remaining_deck):
+    """
+    :param dealer: a Dealer instance;
+    :param remaining_deck: the cards that remain in the deck after the player finished his hand;
+    :returns: The dealer's final score;
+
+    Note: The dealer draws until his score is at least 17.
+    """
     print("----------------\n"
           "Dealer's turn...")
     while dealer.keeps_playing():
@@ -21,23 +47,33 @@ def dealer_score(dealer, remaining_deck):
     return dealer.get_score()
 
 
-def start_game(bet: int):
+def start_game(player: Player, bet: int):
+    """
+    :param player: the Player
+    :param bet: the amount of chips waged
+    :return: True if the player wants to quit, False if the player wants to restart
+    """
+    # shuffling deck
     current_deck = random.sample(full_deck, len(full_deck))
 
-    you = Player()
-    dealer = Player()
+    player.set_score(0)
+    player.folded = False
+
+    dealer = Dealer()
 
     print("Dealing first two cards...")
 
     for _ in range(2):
-        you.hit_card(draw_card(current_deck))
+        player.hit_card(draw_card(current_deck))
         time.sleep(1)
 
-    if you.get_score() == 21:
-        print("Natural! You win {} chips!".format(int(bet * 1.5)))
-        return
+    if player.get_score() == 21:
+        win_amount = int(bet * 0.5)
+        print("Natural! You win {} chips!".format(win_amount))
+        player.modify_balance(win_amount, 'win')
+        return finish_game()
 
-    while you.keeps_playing():
+    while player.keeps_playing():
         choice = input("Press 'h' to hit and 'f' to fold: ").lower()
 
         while choice not in ['h', 'f']:
@@ -45,26 +81,29 @@ def start_game(bet: int):
 
         if choice == 'h':
             random_card = draw_card(current_deck)
-            you.hit_card(random_card)
+            player.hit_card(random_card)
         else:
-            you.fold()
+            player.fold()
 
-    y_score = you.get_score()
-    time.sleep(1)
+    player_score = player.get_score()
     d_score = dealer_score(dealer, current_deck)
 
     print("--------------")
-    print("Your score:", y_score)
+    print("Your score:", player_score)
     print("Dealer score:", d_score)
 
-    if y_score <= 21:
-        if d_score > 21:
-            print("You won {} chips!".format(bet * 2))
-        elif d_score == y_score:
+    if player_score <= 21:
+        if d_score > 21 or d_score < player_score:
+            win_amount = bet * 2
+            print("You won {} chips!".format(win_amount))
+            player.modify_balance(win_amount, 'win')
+        elif d_score == player_score:
             print("It's a tie! No chips won or lost.")
-        elif d_score < y_score:
-            print("You won {} chips!".format(bet * 2))
         else:
             print("You lost {} chips!".format(bet))
+            player.modify_balance(bet, 'lose')
     else:
         print("You lost {} chips!".format(bet))
+        player.modify_balance(bet, 'lose')
+
+    return finish_game()

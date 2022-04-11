@@ -8,8 +8,8 @@ def welcome():
         choice = (input("Please, press 's' to start the game, or 'q' to leave: ")).lower()
 
     if choice == 's':
-        print("Alright, let's begin...")
-        start_game()
+        bet = int(input("How many chips would you like to bet?"))
+        start_game(bet)
     else:
         print("Okay, goodbye!")
         return
